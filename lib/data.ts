@@ -15,9 +15,7 @@ export type Report = {
   title: string;
   description: string;
   date: string;
-  category: string;
-  pages: number;
-  downloadUrl: string;
+  file_url: string;
 };
 
 export type FocusArea = {

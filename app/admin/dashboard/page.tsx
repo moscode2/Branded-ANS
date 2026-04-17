@@ -6,14 +6,18 @@ import { Article, Report, formatDate } from "@/lib/data";
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<Articles[]>([]);
   const [reports, setReports]   = useState<Report[]>([]);
 
   useEffect(() => {
-    setArticles(getStoredArticles());
-    setReports(getStoredReports());
+    fetch("/api/articles")
+      .then((res) => res.json())
+      .then(setArticles);
+  
+    fetch("/api/reports")
+      .then((res) => res.json())
+      .then(setReports);
   }, []);
-
   const categories = [...new Set(articles.map((a) => a.category))];
   const recent = [...articles]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -46,7 +50,7 @@ export default function DashboardPage() {
         {/* Quick actions */}
         <div className="flex gap-3 mb-10">
           <Link href="/admin/articles/new" className="px-5 py-2.5 bg-gold text-ink text-[0.72rem] tracking-[0.12em] uppercase font-medium hover:bg-gold2 transition-colors">
-            + New Article
+            + New Insight
           </Link>
           <Link href="/admin/reports" className="px-5 py-2.5 border border-white/10 text-sand text-[0.72rem] tracking-[0.12em] uppercase font-medium hover:border-gold/30 hover:text-gold transition-colors">
             Manage Reports
@@ -59,7 +63,7 @@ export default function DashboardPage() {
         {/* Recent articles */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display text-xl text-sand font-medium">Recent Articles</h2>
+            <h2 className="font-display text-xl text-sand font-medium">Recent Insights</h2>
             <Link href="/admin/articles" className="text-[0.68rem] tracking-[0.12em] uppercase text-muted hover:text-gold transition-colors">
               Manage all →
             </Link>

@@ -1,5 +1,5 @@
 import SectionLabel from "@/components/SectionLabel";
-import LiveArticles from "@/components/admin/LiveaArticles";
+import LiveArticles from "@/components/admin/LiveInsights";
 
 export default function InsightsPage() {
   return (
