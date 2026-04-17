@@ -4,9 +4,9 @@ import AdminShell from "@/components/admin/AdminShell";
 import { getStoredArticles, getStoredReports } from "@/lib/adminStore";
 import { Article, Report, formatDate } from "@/lib/data";
 import Link from "next/link";
-
+import CreateReport from "@/components/admin/CreateReport";
 export default function DashboardPage() {
-  const [articles, setArticles] = useState<Articles[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [reports, setReports]   = useState<Report[]>([]);
 
   useEffect(() => {
