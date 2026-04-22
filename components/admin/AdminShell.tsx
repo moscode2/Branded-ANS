@@ -130,7 +130,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           </div>
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-cyan/60" />
-            <span className="text-[0.62rem] tracking-[0.15em] uppercase text-muted/40 font-mono">Supabase connected</span>
+            <span className="text-[0.62rem] tracking-[0.15em] uppercase text-muted/40 font-mono">Database connected</span>
           </div>
         </div>
         <div className="p-8">{children}</div>
