@@ -16,7 +16,6 @@ export type Report = {
   description: string;
   date: string;
   file_url: string;
-  downloadUrl?: string;
   category?: string; 
   pages?: number;
 };
