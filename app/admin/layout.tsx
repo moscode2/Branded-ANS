@@ -1,15 +1,17 @@
-import type { Metadata } from "next";
+"use client";
+import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { isAuthenticated } from "@/lib/adminStore";
 
-export const metadata: Metadata = {
-  title: "Admin Dashboard | Africa Narrative Signals",
-  robots: { index: false, follow: false },
-};
-
-// Admin has its own layout — no public Navbar/Footer
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen bg-[#080808] text-sand">
-      {children}
-    </div>
-  );
+  const router   = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname === "/admin") return;
+    if (!isAuthenticated()) router.replace("/admin");
+  }, [pathname, router]);
+
+  // No wrapping div needed - RootProviders handles the background
+  return <>{children}</>;
 }

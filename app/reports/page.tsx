@@ -55,7 +55,7 @@ export default function ReportsPage() {
             {[
               { num: reports.length > 0 ? `${reports.length}` : "—", label: "Publications" },
               { num: "Free", label: "Open Access" },
-              { num: "2024–25", label: "Coverage Period" },
+              { num: "2025–26", label: "Coverage Period" },
             ].map((s) => (
               <div key={s.label}>
                 <p className="font-display text-3xl text-gold font-medium mb-1">{s.num}</p>

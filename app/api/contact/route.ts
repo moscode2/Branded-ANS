@@ -1,26 +1,50 @@
-import { supabase } from "@/lib/supabase";
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // IMPORTANT (not anon key)
+);
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
+    const { name, email, organization, inquiryType, message, subscribe } = body;
+
+    if (!name || !email || !message) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
     const { error } = await supabase.from("contacts").insert([
       {
-        name: body.name,
-        email: body.email,
-        organization: body.organization,
-        inquiry_type: body.inquiryType,
-        message: body.message,
-        subscribe: body.subscribe,
+        name,
+        email,
+        organization,
+        inquiry_type: inquiryType,
+        message,
+        subscribe,
       },
     ]);
 
-    if (error) throw error;
+    if (error) {
+      console.error(error);
+      return NextResponse.json(
+        { error: "Database error" },
+        { status: 500 }
+      );
+    }
 
-    return Response.json({ message: "Message sent successfully!" });
+    return NextResponse.json({
+      message: "Message sent successfully!",
+    });
+
   } catch (err) {
-    return Response.json(
-      { error: "Failed to send message" },
+    return NextResponse.json(
+      { error: "Server error" },
       { status: 500 }
     );
   }

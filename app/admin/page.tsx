@@ -6,8 +6,8 @@ import { login, isAuthenticated } from "@/lib/adminStore";
 export default function AdminLoginPage() {
   const router = useRouter();
   const [password, setPassword] = useState("");
-  const [error, setError]       = useState("");
-  const [loading, setLoading]   = useState(false);
+  const [error,    setError]    = useState("");
+  const [loading,  setLoading]  = useState(false);
 
   useEffect(() => {
     if (isAuthenticated()) router.replace("/admin/dashboard");
@@ -15,68 +15,93 @@ export default function AdminLoginPage() {
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+    setLoading(true); setError("");
     setTimeout(() => {
-      if (login(password)) {
-        router.push("/admin/dashboard");
-      } else {
-        setError("Incorrect password. Please try again.");
-        setLoading(false);
-      }
-    }, 600);
+      if (login(password)) router.push("/admin/dashboard");
+      else { setError("Incorrect password. Please try again."); setLoading(false); }
+    }, 500);
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "#080808" }}>
-      <div className="w-full max-w-sm">
+    <div style={{
+      minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
+      padding: 24, background: "#060a12", fontFamily: "'DM Sans', system-ui, sans-serif",
+      position: "relative",
+    }}>
+      {/* Background glow */}
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,60,140,0.18) 0%, transparent 70%)",
+      }} />
+
+      <div style={{ width: "100%", maxWidth: 380, position: "relative" }}>
         {/* Logo */}
-        <div className="flex items-center gap-3 mb-10">
-          <div className="w-9 h-9 bg-emerald-900 flex items-center justify-center font-mono text-[11px] font-medium tracking-wide text-emerald-200">
-            ANS
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 48 }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: "50%",
+            border: "1px solid rgba(0,212,255,0.3)", background: "rgba(0,212,255,0.08)",
+            display: "flex", alignItems: "center", justifyContent: "center", position: "relative",
+          }}>
+            <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "rgba(0,212,255,0.05)", filter: "blur(8px)" }} />
+            <span style={{ position: "relative", fontSize: 10, fontWeight: 700, color: "#00d4ff", letterSpacing: "0.1em" }}>ANS</span>
           </div>
           <div>
-            <p className="font-mono text-[11px] tracking-[2px] uppercase text-sand/40">Admin Portal</p>
-            <p className="font-mono text-[10px] tracking-[1px] uppercase text-sand/20">Africa Narrative Signals</p>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#e8f4f8", letterSpacing: "0.05em" }}>Africa Narrative Signals</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+              <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(0,212,255,0.6)" }} />
+              <span style={{ fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(0,212,255,0.5)", fontFamily: "monospace" }}>Admin Portal</span>
+            </div>
           </div>
         </div>
 
-        <h1 className="font-display text-3xl text-sand font-medium mb-2">Sign in</h1>
-        <p className="text-sm text-muted mb-8">Enter your admin password to access the dashboard.</p>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#e8f4f8", marginBottom: 8, letterSpacing: "-0.02em" }}>Sign in</h1>
+        <p style={{ fontSize: 14, color: "rgba(122,155,181,0.8)", marginBottom: 32, lineHeight: 1.6 }}>
+          Enter your admin password to access the dashboard.
+        </p>
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
-            <label className="block text-[10px] tracking-[2px] uppercase text-muted mb-2 font-mono">
+            <label style={{ display: "block", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(122,155,181,0.6)", marginBottom: 8, fontFamily: "monospace" }}>
               Password
             </label>
             <input
-              type="password"
-              value={password}
+              type="password" value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              autoFocus
-              className="w-full bg-white/4 border border-white/10 px-4 py-3 text-sm text-sand placeholder:text-muted/30 outline-none focus:border-gold/50 transition-colors font-mono"
+              placeholder="••••••••" required autoFocus
+              style={{
+                width: "100%", background: "#0d1b2e", border: "1px solid #1a3a5c",
+                padding: "12px 16px", fontSize: 14, color: "#e8f4f8",
+                outline: "none", fontFamily: "monospace", boxSizing: "border-box",
+                transition: "border-color 0.2s",
+              }}
+              onFocus={(e) => e.target.style.borderColor = "rgba(0,212,255,0.4)"}
+              onBlur={(e)  => e.target.style.borderColor = "#1a3a5c"}
             />
           </div>
 
           {error && (
-            <p className="text-[0.75rem] text-red-400 bg-red-400/8 border border-red-400/20 px-3 py-2">
+            <div style={{ fontSize: 13, color: "#f87171", background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.2)", padding: "10px 14px" }}>
               {error}
-            </p>
+            </div>
           )}
 
           <button
-            type="submit"
-            disabled={loading}
-            className="mt-2 bg-gold text-ink px-6 py-3 text-[0.75rem] tracking-[0.15em] uppercase font-medium hover:bg-gold2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            type="submit" disabled={loading}
+            style={{
+              marginTop: 8, width: "100%", padding: "13px",
+              background: loading ? "#1a3a5c" : "linear-gradient(135deg, #00d4ff, #1a6fe8)",
+              color: loading ? "#7a9bb5" : "#060a12",
+              fontSize: 13, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
+              border: "none", cursor: loading ? "not-allowed" : "pointer",
+              transition: "opacity 0.2s",
+            }}
           >
-            {loading ? "Signing in..." : "Sign in →"}
+            {loading ? "Signing in…" : "Sign in →"}
           </button>
         </form>
 
-        <p className="text-[0.65rem] text-muted/30 mt-8 text-center font-mono">
-          This area is restricted to authorised personnel only.
+        <p style={{ fontSize: 10, color: "rgba(122,155,181,0.2)", textAlign: "center", marginTop: 40, letterSpacing: "0.15em", fontFamily: "monospace" }}>
+          RESTRICTED ACCESS — AUTHORISED PERSONNEL ONLY
         </p>
       </div>
     </div>

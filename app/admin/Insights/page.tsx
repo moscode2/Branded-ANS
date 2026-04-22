@@ -1,124 +1,155 @@
 "use client";
 import { useEffect, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
-import { getStoredArticles, deleteArticle } from "@/lib/adminStore";
-import { Article, formatDate } from "@/lib/data";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
-export default function AdminArticlesPage() {
+interface Article {
+  id?:      string;
+  slug:     string;
+  title:    string;
+  summary:  string;
+  category: string;
+  date:     string;
+  read_time?: string;
+  body?:    string;
+}
+
+function fmt(d: string) {
+  return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+export default function AdminInsightsPage() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [search, setSearch]     = useState("");
-  const [confirm, setConfirm]   = useState<string | null>(null);
-  const [toast, setToast]       = useState("");
+  const [loading,  setLoading]  = useState(true);
+  const [search,   setSearch]   = useState("");
+  const [confirm,  setConfirm]  = useState<string | null>(null);
+  const [toast,    setToast]    = useState<{ msg: string; type: "success" | "error" }>({ msg: "", type: "success" });
 
-  useEffect(() => { setArticles(getStoredArticles()); }, []);
-
-  function handleDelete(slug: string) {
-    const updated = deleteArticle(slug);
-    setArticles(updated);
-    setConfirm(null);
-    showToast("Article deleted.");
+  async function fetchArticles() {
+    setLoading(true);
+    const { data, error } = await supabase.from("articles").select("*").order("date", { ascending: false });
+    if (error) showToast("Failed to load: " + error.message, "error");
+    else setArticles(data as Article[]);
+    setLoading(false);
   }
 
-  function showToast(msg: string) {
-    setToast(msg);
-    setTimeout(() => setToast(""), 3000);
+  useEffect(() => { fetchArticles(); }, []);
+
+  async function handleDelete(id: string) {
+    const { error } = await supabase.from("articles").delete().eq("id", id);
+    if (error) showToast("Error deleting: " + error.message, "error");
+    else { showToast("Insight deleted."); setArticles((p) => p.filter((a) => a.id !== id)); }
+    setConfirm(null);
+  }
+
+  function showToast(msg: string, type: "success" | "error" = "success") {
+    setToast({ msg, type });
+    setTimeout(() => setToast({ msg: "", type: "success" }), 4000);
   }
 
   const filtered = articles.filter(
-    (a) =>
-      a.title.toLowerCase().includes(search.toLowerCase()) ||
-      a.category.toLowerCase().includes(search.toLowerCase())
+    (a) => a.title.toLowerCase().includes(search.toLowerCase()) || a.category.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <AdminShell>
-      <div className="px-8 py-8">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-8">
-          <div>
-            <h1 className="font-display text-3xl text-sand font-medium">Articles</h1>
-            <p className="text-sm text-muted mt-1">{articles.length} total articles</p>
-          </div>
-          <Link href="/admin/articles/new" className="px-5 py-2.5 bg-gold text-ink text-[0.72rem] tracking-[0.12em] uppercase font-medium hover:bg-gold2 transition-colors">
-            + New Article
-          </Link>
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h1 className="font-display font-700 text-2xl text-sand tracking-wide">Insights</h1>
+          <p className="text-xs text-muted mt-1">
+            {loading ? "Loading from Supabase…" : `${articles.length} article${articles.length !== 1 ? "s" : ""} in database`}
+          </p>
+        </div>
+        <Link href="/admin/insights/new" className="btn-primary text-xs py-2.5 px-5">
+          + New Insight
+        </Link>
+      </div>
+
+      {/* Search */}
+      <div className="mb-5 relative max-w-xs">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted/50 text-xs">⌕</span>
+        <input
+          type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by title or category…"
+          className="w-full bg-spaceMid border border-cyan/12 pl-8 pr-4 py-2.5 text-xs text-sand placeholder:text-muted/30 outline-none focus:border-cyan/35 transition-colors"
+        />
+      </div>
+
+      {/* Table */}
+      <div className="border border-cyan/8 rounded-sm overflow-hidden">
+        {/* Head */}
+        <div className="grid grid-cols-[1fr_130px_110px_130px] px-4 py-2.5 border-b border-cyan/8" style={{ background: "#080d18" }}>
+          {["Title", "Category", "Date", "Actions"].map((h) => (
+            <span key={h} className="text-[0.58rem] tracking-[0.18em] uppercase text-muted/60 font-semibold">{h}</span>
+          ))}
         </div>
 
-        {/* Search */}
-        <div className="mb-6 relative max-w-xs">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-xs">⌕</span>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search articles..."
-            className="w-full bg-white/4 border border-white/8 pl-8 pr-4 py-2.5 text-sm text-sand placeholder:text-muted/40 outline-none focus:border-gold/40 transition-colors"
-          />
-        </div>
-
-        {/* Table */}
-        <div className="border border-white/6">
-          {/* Head */}
-          <div className="grid grid-cols-[1fr_140px_110px_120px] px-5 py-2.5 border-b border-white/6 bg-white/2">
-            {["Title", "Category", "Date", "Actions"].map((h) => (
-              <span key={h} className="text-[0.62rem] tracking-[0.18em] uppercase text-muted font-medium">{h}</span>
+        {/* Loading */}
+        {loading && (
+          <div className="divide-y divide-cyan/4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="grid grid-cols-[1fr_130px_110px_130px] px-4 py-3.5 animate-pulse">
+                <div className="h-2.5 bg-white/5 rounded w-2/3" />
+                <div className="h-2.5 bg-white/5 rounded w-1/2" />
+                <div className="h-2.5 bg-white/5 rounded w-1/3" />
+                <div className="h-2.5 bg-white/5 rounded w-1/4" />
+              </div>
             ))}
           </div>
+        )}
 
-          {/* Rows */}
-          <div className="divide-y divide-white/5">
+        {/* Rows */}
+        {!loading && (
+          <div className="divide-y divide-cyan/4">
             {filtered.map((article) => (
-              <div key={article.slug} className="grid grid-cols-[1fr_140px_110px_120px] px-5 py-4 hover:bg-white/2 transition-colors items-center group">
+              <div key={article.id ?? article.slug} className="grid grid-cols-[1fr_130px_110px_130px] px-4 py-3.5 hover:bg-cyan/3 transition-colors items-center group">
                 <div className="min-w-0 pr-4">
-                  <p className="text-sm text-sand truncate font-medium">{article.title}</p>
-                  <p className="text-[0.68rem] text-muted/60 truncate mt-0.5">{article.summary.slice(0, 70)}...</p>
+                  <p className="text-xs text-sand truncate font-medium">{article.title}</p>
+                  <p className="text-[0.65rem] text-muted/50 truncate mt-0.5">{article.summary?.slice(0, 60)}…</p>
                 </div>
-                <span className="text-[0.6rem] tracking-[0.15em] uppercase text-gold border border-gold/25 px-2 py-0.5 w-fit">
+                <span className="text-[0.58rem] tracking-[0.14em] uppercase text-cyan border border-cyan/20 px-2 py-0.5 w-fit bg-cyan/5">
                   {article.category}
                 </span>
-                <span className="text-[0.68rem] text-muted font-mono">{formatDate(article.date)}</span>
-                <div className="flex items-center gap-4">
-                  <Link
-                    href={`/admin/articles/edit?slug=${article.slug}`}
-                    className="text-[0.65rem] tracking-[0.1em] uppercase text-muted hover:text-gold transition-colors"
-                  >
+                <span className="text-[0.65rem] text-muted font-mono">{fmt(article.date)}</span>
+                <div className="flex items-center gap-3">
+                  <Link href={`/admin/insights/${article.id}`} className="text-[0.62rem] tracking-[0.08em] uppercase text-muted hover:text-cyan transition-colors">
                     Edit
                   </Link>
-                  <button
-                    onClick={() => setConfirm(article.slug)}
-                    className="text-[0.65rem] tracking-[0.1em] uppercase text-muted hover:text-red-400 transition-colors"
-                  >
+                  <button onClick={() => setConfirm(article.id ?? article.slug)} className="text-[0.62rem] tracking-[0.08em] uppercase text-muted hover:text-red-400 transition-colors">
                     Delete
                   </button>
-                  <Link
-                    href={`/insights/${article.slug}`}
-                    target="_blank"
-                    className="text-[0.65rem] text-muted/40 hover:text-muted transition-colors"
-                  >
+                  <Link href={`/insights/${article.slug}`} target="_blank" className="text-[0.62rem] text-muted/30 hover:text-muted transition-colors">
                     ↗
                   </Link>
                 </div>
               </div>
             ))}
-            {filtered.length === 0 && (
-              <p className="px-5 py-12 text-sm text-muted text-center">No articles found.</p>
+            {filtered.length === 0 && !loading && (
+              <div className="px-5 py-14 text-center">
+                <p className="text-xs text-muted">
+                  {search ? "No articles match your search." : "No insights yet."}
+                </p>
+                {!search && <Link href="/admin/insights/new" className="text-cyan text-xs mt-2 inline-block hover:underline">Create first insight →</Link>}
+              </div>
             )}
           </div>
-        </div>
+        )}
       </div>
+      <p className="text-[0.58rem] text-muted/25 font-mono mt-2">↳ supabase · table: articles · ordered by date desc</p>
 
-      {/* Delete confirm modal */}
+      {/* Delete modal */}
       {confirm && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
-          <div className="bg-[#111] border border-white/10 p-7 max-w-sm w-full">
-            <h3 className="font-display text-xl text-sand mb-2">Delete article?</h3>
-            <p className="text-sm text-muted mb-6">This action cannot be undone. The article will be permanently removed.</p>
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-50 px-4 backdrop-blur-sm">
+          <div className="border border-cyan/15 p-7 max-w-sm w-full rounded-sm" style={{ background: "#0d1b2e" }}>
+            <h3 className="font-display font-700 text-lg text-sand mb-2 tracking-wide">Delete insight?</h3>
+            <p className="text-xs text-muted mb-6 leading-relaxed">This permanently removes the record from Supabase and cannot be undone.</p>
             <div className="flex gap-3">
-              <button onClick={() => handleDelete(confirm)} className="px-5 py-2 bg-red-500/80 text-white text-[0.72rem] tracking-[0.1em] uppercase font-medium hover:bg-red-500 transition-colors">
+              <button onClick={() => handleDelete(confirm)} className="px-5 py-2 bg-red-500/80 text-white text-[0.68rem] tracking-[0.1em] uppercase font-semibold hover:bg-red-500 transition-colors">
                 Yes, delete
               </button>
-              <button onClick={() => setConfirm(null)} className="px-5 py-2 border border-white/10 text-muted text-[0.72rem] tracking-[0.1em] uppercase font-medium hover:text-sand transition-colors">
+              <button onClick={() => setConfirm(null)} className="px-5 py-2 border border-cyan/15 text-muted text-[0.68rem] tracking-[0.1em] uppercase font-medium hover:text-sand transition-colors">
                 Cancel
               </button>
             </div>
@@ -127,9 +158,11 @@ export default function AdminArticlesPage() {
       )}
 
       {/* Toast */}
-      {toast && (
-        <div className="fixed bottom-6 right-6 bg-emerald-900 border border-emerald-700 text-emerald-200 text-sm px-5 py-3 z-50 font-mono">
-          ✓ {toast}
+      {toast.msg && (
+        <div className={`fixed bottom-6 right-6 border text-xs px-5 py-3 z-50 font-mono rounded-sm ${
+          toast.type === "error" ? "bg-red-950 border-red-700/50 text-red-300" : "bg-spaceMid border-cyan/30 text-cyan"
+        }`}>
+          {toast.type === "error" ? "✗" : "✓"} {toast.msg}
         </div>
       )}
     </AdminShell>
