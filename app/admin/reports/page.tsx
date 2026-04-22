@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 interface Report {
   id: string; title: string; description: string;
   file_url?: string; cover_image?: string; date: string;
-  category?: string; pages?: number; author?: string; downloadUrl: string;
+  category?: string; pages?: number; author?: string;
 }
 
 type FormState = Omit<Report, "id">;

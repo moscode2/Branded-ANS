@@ -1,4 +1,4 @@
-interface Report { id: string; title: string; description: string; file_url?: string; date: string; category?: string; pages?: number;  downloadUrl: string;}
+interface Report { id: string; title: string; description: string; file_url?: string; date: string; category?: string; pages?: number; }
 
 function fmt(d: string) {
   return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
