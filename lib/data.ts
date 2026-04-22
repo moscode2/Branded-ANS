@@ -130,7 +130,7 @@ export const reports: Report[] = [
     date: "2024-12-01",
     category: "Annual Report",
     pages: 84,
-    downloadUrl: "#",
+    file_url: "#",
   },
   {
     id: "election-monitoring-west-africa",
@@ -140,7 +140,7 @@ export const reports: Report[] = [
     date: "2024-11-30",
     category: "Election",
     pages: 52,
-    downloadUrl: "#",
+    file_url: "#",
   },
   {
     id: "disinformation-network-report",
@@ -150,7 +150,7 @@ export const reports: Report[] = [
     date: "2024-10-15",
     category: "Disinformation",
     pages: 67,
-    downloadUrl: "#",
+    file_url: "#",
   },
   {
     id: "platform-policy-brief",
@@ -160,7 +160,7 @@ export const reports: Report[] = [
     date: "2024-09-01",
     category: "Policy Brief",
     pages: 28,
-    downloadUrl: "#",
+    file_url: "#",
   },
   {
     id: "synthetic-media-threat-assessment",
@@ -170,7 +170,7 @@ export const reports: Report[] = [
     date: "2024-08-10",
     category: "Threat Assessment",
     pages: 41,
-    downloadUrl: "#",
+    file_url: "#",
   },
   {
     id: "sahel-information-report",
@@ -180,7 +180,7 @@ export const reports: Report[] = [
     date: "2024-07-20",
     category: "Field Research",
     pages: 59,
-    downloadUrl: "#",
+    file_url: "#",
   },
 ];
 
