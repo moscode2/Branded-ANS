@@ -192,12 +192,12 @@ export default function EditInsightPage() {
                 {/* Quick insert buttons */}
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
                   {[
-                    { label: "H2", tag: "<h2>Section Title</h2>" },
-                    { label: "P",  tag: "<p>Paragraph text here.</p>" },
-                    { label: "Quote", tag: "<blockquote>Key quote or finding.</blockquote>" },
-                    { label: "List", tag: "<ul>\n  <li>Point one</li>\n  <li>Point two</li>\n</ul>" },
-                    { label: "Bold", tag: "<strong>important text</strong>" },
-                    { label: "Image", tag: '<img src="URL" alt="Description" style="width:100%;margin:16px 0;border-radius:4px" />' },
+                    { label: "H2", tag: "" },
+                    { label: "P",  tag: "" },
+                    { label: "Quote", tag: "" },
+                    { label: "List", tag: "" },
+                    { label: "Bold", tag: "" },
+                    { label: "Image", tag: '' },
                   ].map(({ label: l, tag }) => (
                     <button key={l} type="button"
                       onClick={() => set("body", (form.body ?? "") + "\n" + tag)}
@@ -208,7 +208,7 @@ export default function EditInsightPage() {
                 </div>
 
                 <textarea rows={24} value={form.body ?? ""} onChange={(e) => set("body", e.target.value)}
-                  placeholder={`<h2>Executive Summary</h2>\n<p>Misinformation in East Africa is evolving from isolated falsehoods into coordinated, system-level influence operations...</p>\n\n<h2>Introduction</h2>\n<p>The East African information ecosystem has entered a post-truth operational phase...</p>\n\n<blockquote>ANS treats information ecosystems as living, adaptive systems.</blockquote>\n\n<h2>Key Findings</h2>\n<ul>\n  <li>Early Signal Detection: Identifying narrative patterns before mainstream breakout</li>\n  <li>Network Analysis: Mapping how narratives spread</li>\n  <li>Cultural Contextualization: Interpreting narratives within local contexts</li>\n</ul>`}
+                  placeholder={``}
                   style={{ ...inpStyle, width: "100%", resize: "vertical", padding: "12px 16px", fontSize: 12, fontFamily: "monospace", lineHeight: 1.7, boxSizing: "border-box", borderRadius: 4 }} />
               </div>
             </div>
@@ -267,23 +267,6 @@ export default function EditInsightPage() {
                 <input value={form.author ?? ""} onChange={(e) => set("author", e.target.value)}
                   placeholder="e.g. Dr Sue Katue"
                   style={{ ...inpStyle, width: "100%", padding: "12px 16px", fontSize: 14, borderRadius: 4, boxSizing: "border-box" as const }} />
-              </div>
-
-              {/* Tips */}
-              <div style={{ background: "rgba(0,212,255,0.04)", border: "1px solid rgba(0,212,255,0.1)", borderRadius: 4, padding: 16 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: "#00d4ff", marginBottom: 10, letterSpacing: "0.14em", textTransform: "uppercase" }}>Content Tips</p>
-                <ul style={{ fontSize: 12, color: "#7a9bb5", lineHeight: 1.8, paddingLeft: 0, listStyle: "none" }}>
-                  <li>• &lt;h2&gt; for section headings</li>
-                  <li>• &lt;p&gt; for body paragraphs</li>
-                  <li>• &lt;blockquote&gt; for key quotes</li>
-                  <li>• &lt;ul&gt;&lt;li&gt; for bullet lists</li>
-                  <li>• &lt;img src="…"&gt; to embed images</li>
-                  <li>• &lt;strong&gt; for bold text</li>
-                </ul>
-                <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid rgba(0,212,255,0.08)" }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#00d4ff", marginBottom: 6, letterSpacing: "0.14em", textTransform: "uppercase" }}>Storage Bucket</p>
-                  <p style={{ fontSize: 11, color: "#3d5a73" }}>Create bucket <strong style={{ color: "#7a9bb5" }}>ans-media</strong> in Supabase Storage and set it to public for image uploads to work.</p>
-                </div>
               </div>
             </div>
           </div>

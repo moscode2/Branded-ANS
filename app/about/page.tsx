@@ -203,12 +203,12 @@ export default function AboutPage() {
                 <span className="italic">Democracy</span>
               </h2>
               <div className="space-y-4 text-sm text-muted leading-relaxed">
-                <p>
-                  Africa is home to 54 countries, over 1.4 billion people, and
-                  some of the world's fastest-growing digital populations.
-                  Across the continent, elections are being won and lost in
-                  information environments that few people systematically study.
-                </p>
+              <p>
+  Africa is home to 54 countries, over 1.4 billion people, and
+  some of the world&apos;s fastest-growing digital populations.
+  Across the continent, elections are being won and lost in
+  information environments that few people systematically study.
+</p>
                 <p>
                   Political narratives — accurate and false alike — travel at
                   unprecedented speed across WhatsApp groups, Facebook pages,

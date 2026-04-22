@@ -43,7 +43,7 @@ export default function HomePage() {
 
             {/* Tagline */}
             <p className="text-xl md:text-2xl font-display italic text-muted mb-8 leading-relaxed">
-              "Turning information flows into actionable intelligence"
+              {"Turning information flows into actionable intelligence"}
             </p>
 
             {/* Description */}
