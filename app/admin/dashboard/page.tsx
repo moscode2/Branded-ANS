@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
 import Link from "next/link";
 
-interface Article { slug: string; title: string; category: string; date: string; }
+interface Article { slug: string; title: string; category: string; date: string; id?: string }
 interface Report  { id: string;   title: string; date: string; file_url?: string; }
 
 export default function DashboardPage() {
