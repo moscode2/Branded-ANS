@@ -5,7 +5,6 @@ export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
 
-    // Basic validation
     if (!email || typeof email !== "string") {
       return NextResponse.json({ error: "A valid email address is required." }, { status: 400 });
     }
@@ -16,10 +15,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
     }
 
-    // Insert into Supabase — unique constraint handles duplicates
+    // Only insert email and active — created_at is handled automatically by Supabase
     const { error } = await supabase
       .from("subscribers")
-      .insert([{ email: normalized }]);
+      .insert([{ email: normalized, active: true }]);
 
     if (error) {
       // Unique violation — already subscribed
@@ -30,7 +29,10 @@ export async function POST(req: NextRequest) {
         );
       }
       console.error("Supabase error:", error);
-      return NextResponse.json({ error: "Could not save your subscription. Please try again." }, { status: 500 });
+      return NextResponse.json(
+        { error: "Could not save your subscription. Please try again." },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(
