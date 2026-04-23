@@ -1,18 +1,20 @@
 "use client";
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
 interface Article {
-  id?:      string;
-  slug:     string;
-  title:    string;
-  summary:  string;
-  category: string;
-  date:     string;
+  id:        string;
+  slug:      string;
+  title:     string;
+  summary:   string;
+  category:  string;
+  date:      string;
   read_time?: string;
-  body?:    string;
+  body?:     string;
 }
 
 function fmt(d: string) {
@@ -28,9 +30,12 @@ export default function AdminInsightsPage() {
 
   async function fetchArticles() {
     setLoading(true);
-    const { data, error } = await supabase.from("articles").select("*").order("date", { ascending: false });
+    const { data, error } = await supabase
+      .from("articles")
+      .select("*")
+      .order("date", { ascending: false });
     if (error) showToast("Failed to load: " + error.message, "error");
-    else setArticles(data as Article[]);
+    else setArticles((data as Article[]) ?? []);
     setLoading(false);
   }
 
@@ -49,107 +54,134 @@ export default function AdminInsightsPage() {
   }
 
   const filtered = articles.filter(
-    (a) => a.title.toLowerCase().includes(search.toLowerCase()) || a.category.toLowerCase().includes(search.toLowerCase())
+    (a) => a.title.toLowerCase().includes(search.toLowerCase()) ||
+           a.category.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <AdminShell>
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
         <div>
-          <h1 className="font-display font-700 text-2xl text-sand tracking-wide">Insights</h1>
-          <p className="text-xs text-muted mt-1">
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#e8f4f8", margin: 0, letterSpacing: "0.02em" }}>Insights</h1>
+          <p style={{ fontSize: 12, color: "#7a9bb5", marginTop: 4 }}>
             {loading ? "Loading from Supabase…" : `${articles.length} article${articles.length !== 1 ? "s" : ""} in database`}
           </p>
         </div>
-        <Link href="/admin/insights/new" className="btn-primary text-xs py-2.5 px-5">
+        <Link href="/admin/insights/new"
+          style={{ padding: "10px 20px", background: "linear-gradient(135deg, #00d4ff, #1a6fe8)", color: "#060a12", fontSize: 13, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: 4, textDecoration: "none", display: "inline-block" }}>
           + New Insight
         </Link>
       </div>
 
       {/* Search */}
-      <div className="mb-5 relative max-w-xs">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted/50 text-xs">⌕</span>
+      <div style={{ marginBottom: 20, position: "relative", maxWidth: 320 }}>
+        <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#3d5a73", fontSize: 14 }}>⌕</span>
         <input
           type="text" value={search} onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by title or category…"
-          className="w-full bg-spaceMid border border-cyan/12 pl-8 pr-4 py-2.5 text-xs text-sand placeholder:text-muted/30 outline-none focus:border-cyan/35 transition-colors"
+          style={{ width: "100%", background: "#0d1b2e", border: "1px solid #1a3a5c", color: "#e8f4f8", padding: "10px 14px 10px 36px", fontSize: 13, borderRadius: 4, outline: "none", boxSizing: "border-box" }}
         />
       </div>
 
       {/* Table */}
-      <div className="border border-cyan/8 rounded-sm overflow-hidden">
+      <div style={{ border: "1px solid #1a3a5c", borderRadius: 4, overflow: "hidden" }}>
         {/* Head */}
-        <div className="grid grid-cols-[1fr_130px_110px_130px] px-4 py-2.5 border-b border-cyan/8" style={{ background: "#080d18" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 130px 110px 140px", padding: "10px 16px", background: "#080d18", borderBottom: "1px solid #1a3a5c" }}>
           {["Title", "Category", "Date", "Actions"].map((h) => (
-            <span key={h} className="text-[0.58rem] tracking-[0.18em] uppercase text-muted/60 font-semibold">{h}</span>
+            <span key={h} style={{ fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(122,155,181,0.5)", fontWeight: 600 }}>{h}</span>
           ))}
         </div>
 
-        {/* Loading */}
-        {loading && (
-          <div className="divide-y divide-cyan/4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="grid grid-cols-[1fr_130px_110px_130px] px-4 py-3.5 animate-pulse">
-                <div className="h-2.5 bg-white/5 rounded w-2/3" />
-                <div className="h-2.5 bg-white/5 rounded w-1/2" />
-                <div className="h-2.5 bg-white/5 rounded w-1/3" />
-                <div className="h-2.5 bg-white/5 rounded w-1/4" />
-              </div>
+        {/* Loading skeletons */}
+        {loading && [...Array(5)].map((_, i) => (
+          <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 130px 110px 140px", padding: "14px 16px", borderBottom: "1px solid #0d2035" }}>
+            {[...Array(4)].map((__, j) => (
+              <div key={j} style={{ height: 10, background: "#1a3a5c", borderRadius: 3, width: j === 0 ? "70%" : "50%" }} />
             ))}
           </div>
-        )}
+        ))}
 
         {/* Rows */}
-        {!loading && (
-          <div className="divide-y divide-cyan/4">
-            {filtered.map((article) => (
-              <div key={article.id ?? article.slug} className="grid grid-cols-[1fr_130px_110px_130px] px-4 py-3.5 hover:bg-cyan/3 transition-colors items-center group">
-                <div className="min-w-0 pr-4">
-                  <p className="text-xs text-sand truncate font-medium">{article.title}</p>
-                  <p className="text-[0.65rem] text-muted/50 truncate mt-0.5">{article.summary?.slice(0, 60)}…</p>
-                </div>
-                <span className="text-[0.58rem] tracking-[0.14em] uppercase text-cyan border border-cyan/20 px-2 py-0.5 w-fit bg-cyan/5">
-                  {article.category}
-                </span>
-                <span className="text-[0.65rem] text-muted font-mono">{fmt(article.date)}</span>
-                <div className="flex items-center gap-3">
-                  <Link href={`/admin/insights/${article.id}`} className="text-[0.62rem] tracking-[0.08em] uppercase text-muted hover:text-cyan transition-colors">
-                    Edit
-                  </Link>
-                  <button onClick={() => setConfirm(article.id ?? article.slug)} className="text-[0.62rem] tracking-[0.08em] uppercase text-muted hover:text-red-400 transition-colors">
-                    Delete
-                  </button>
-                  <Link href={`/insights/${article.slug}`} target="_blank" className="text-[0.62rem] text-muted/30 hover:text-muted transition-colors">
-                    ↗
-                  </Link>
-                </div>
-              </div>
-            ))}
-            {filtered.length === 0 && !loading && (
-              <div className="px-5 py-14 text-center">
-                <p className="text-xs text-muted">
-                  {search ? "No articles match your search." : "No insights yet."}
-                </p>
-                {!search && <Link href="/admin/insights/new" className="text-cyan text-xs mt-2 inline-block hover:underline">Create first insight →</Link>}
-              </div>
+        {!loading && filtered.length === 0 && (
+          <div style={{ padding: "48px 20px", textAlign: "center" }}>
+            <p style={{ fontSize: 13, color: "#7a9bb5", marginBottom: 8 }}>
+              {search ? "No articles match your search." : "No insights yet."}
+            </p>
+            {!search && (
+              <Link href="/admin/insights/new" style={{ fontSize: 12, color: "#00d4ff", textDecoration: "underline" }}>
+                Create your first insight →
+              </Link>
             )}
           </div>
         )}
-      </div>
-      <p className="text-[0.58rem] text-muted/25 font-mono mt-2">↳ supabase · table: articles · ordered by date desc</p>
 
-      {/* Delete modal */}
+        {!loading && filtered.map((article) => (
+          <div key={article.id}
+            style={{ display: "grid", gridTemplateColumns: "1fr 130px 110px 140px", padding: "13px 16px", borderBottom: "1px solid #0d2035", alignItems: "center", transition: "background 0.15s" }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,212,255,0.03)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+
+            <div style={{ minWidth: 0, paddingRight: 16 }}>
+              <p style={{ fontSize: 12, color: "#e8f4f8", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {article.title}
+              </p>
+              <p style={{ fontSize: 11, color: "rgba(122,155,181,0.5)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: 2 }}>
+                {article.summary?.slice(0, 65)}…
+              </p>
+            </div>
+
+            <span style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "#00d4ff", border: "1px solid rgba(0,212,255,0.2)", padding: "2px 8px", borderRadius: 2, background: "rgba(0,212,255,0.05)", whiteSpace: "nowrap", width: "fit-content" }}>
+              {article.category}
+            </span>
+
+            <span style={{ fontSize: 11, color: "#7a9bb5", fontFamily: "monospace" }}>
+              {fmt(article.date)}
+            </span>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <Link href={`/admin/insights/${article.id}`}
+                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#7a9bb5", textDecoration: "none", transition: "color 0.2s" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#00d4ff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#7a9bb5")}>
+                Edit
+              </Link>
+              <button onClick={() => setConfirm(article.id)}
+                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#7a9bb5", background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.2s" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#f87171")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#7a9bb5")}>
+                Delete
+              </button>
+              <Link href={`/insights/${article.slug}`} target="_blank"
+                style={{ fontSize: 11, color: "rgba(122,155,181,0.3)", textDecoration: "none", transition: "color 0.2s" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#7a9bb5")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(122,155,181,0.3)")}>
+                ↗
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <p style={{ fontSize: 10, color: "rgba(122,155,181,0.25)", fontFamily: "monospace", marginTop: 8 }}>
+        ↳ supabase · table: articles · ordered by date desc
+      </p>
+
+      {/* Delete confirm modal */}
       {confirm && (
-        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-50 px-4 backdrop-blur-sm">
-          <div className="border border-cyan/15 p-7 max-w-sm w-full rounded-sm" style={{ background: "#0d1b2e" }}>
-            <h3 className="font-display font-700 text-lg text-sand mb-2 tracking-wide">Delete insight?</h3>
-            <p className="text-xs text-muted mb-6 leading-relaxed">This permanently removes the record from Supabase and cannot be undone.</p>
-            <div className="flex gap-3">
-              <button onClick={() => handleDelete(confirm)} className="px-5 py-2 bg-red-500/80 text-white text-[0.68rem] tracking-[0.1em] uppercase font-semibold hover:bg-red-500 transition-colors">
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, backdropFilter: "blur(4px)" }}>
+          <div style={{ background: "#0d1b2e", border: "1px solid rgba(0,212,255,0.15)", borderRadius: 8, padding: 32, maxWidth: 400, width: "90%" }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8f4f8", marginBottom: 8 }}>Delete insight?</h3>
+            <p style={{ fontSize: 13, color: "#7a9bb5", lineHeight: 1.6, marginBottom: 24 }}>
+              This permanently removes the record from Supabase and cannot be undone.
+            </p>
+            <div style={{ display: "flex", gap: 12 }}>
+              <button onClick={() => handleDelete(confirm)}
+                style={{ padding: "10px 24px", background: "#dc2626", color: "#fff", border: "none", fontSize: 13, fontWeight: 600, borderRadius: 4, cursor: "pointer" }}>
                 Yes, delete
               </button>
-              <button onClick={() => setConfirm(null)} className="px-5 py-2 border border-cyan/15 text-muted text-[0.68rem] tracking-[0.1em] uppercase font-medium hover:text-sand transition-colors">
+              <button onClick={() => setConfirm(null)}
+                style={{ padding: "10px 24px", background: "none", border: "1px solid #1a3a5c", color: "#7a9bb5", fontSize: 13, borderRadius: 4, cursor: "pointer" }}>
                 Cancel
               </button>
             </div>
@@ -159,9 +191,13 @@ export default function AdminInsightsPage() {
 
       {/* Toast */}
       {toast.msg && (
-        <div className={`fixed bottom-6 right-6 border text-xs px-5 py-3 z-50 font-mono rounded-sm ${
-          toast.type === "error" ? "bg-red-950 border-red-700/50 text-red-300" : "bg-spaceMid border-cyan/30 text-cyan"
-        }`}>
+        <div style={{
+          position: "fixed", bottom: 24, right: 24, zIndex: 200,
+          padding: "12px 20px", borderRadius: 4, fontSize: 13, fontFamily: "monospace",
+          background: toast.type === "error" ? "#450a0a" : "#0d1b2e",
+          border: toast.type === "error" ? "1px solid rgba(248,113,113,0.4)" : "1px solid rgba(0,212,255,0.3)",
+          color: toast.type === "error" ? "#f87171" : "#00d4ff",
+        }}>
           {toast.type === "error" ? "✗" : "✓"} {toast.msg}
         </div>
       )}
