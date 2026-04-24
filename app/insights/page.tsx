@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import ArticleCard from "@/components/ArticleCard";
@@ -6,13 +8,11 @@ import SectionLabel from "@/components/SectionLabel";
 
 interface Article { id: string; slug: string; title: string; summary: string; category: string; date: string; read_time?: string; }
 
-const ALL_CATEGORIES = ["All", "Elections", "Misinformation", "Technology", "Policy", "Conflict", "Media", "Research"];
-
 export default function InsightsPage() {
-  const [articles,        setArticles]        = useState<Article[]>([]);
-  const [loading,         setLoading]         = useState(true);
-  const [search,          setSearch]          = useState("");
-  const [activeCategory,  setActiveCategory]  = useState("All");
+  const [articles,       setArticles]       = useState<Article[]>([]);
+  const [loading,        setLoading]        = useState(true);
+  const [search,         setSearch]         = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
     supabase.from("articles").select("*").order("date", { ascending: false })
