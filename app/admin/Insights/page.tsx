@@ -54,8 +54,8 @@ export default function AdminInsightsPage() {
   }
 
   const filtered = articles.filter(
-    (a) => a.title.toLowerCase().includes(search.toLowerCase()) ||
-           a.category.toLowerCase().includes(search.toLowerCase())
+    (a) => a.title?.toLowerCase().includes(search.toLowerCase()) ||
+           a.category?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -80,29 +80,26 @@ export default function AdminInsightsPage() {
         <input
           type="text" value={search} onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by title or category…"
-          style={{ width: "100%", background: "#0d1b2e", border: "1px solid #1a3a5c", color: "#e8f4f8", padding: "10px 14px 10px 36px", fontSize: 13, borderRadius: 4, outline: "none", boxSizing: "border-box" }}
+          style={{ width: "100%", background: "#0d1b2e", border: "1px solid #1a3a5c", color: "#e8f4f8", padding: "10px 14px 10px 36px", fontSize: 13, borderRadius: 4, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }}
         />
       </div>
 
       {/* Table */}
       <div style={{ border: "1px solid #1a3a5c", borderRadius: 4, overflow: "hidden" }}>
-        {/* Head */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 130px 110px 140px", padding: "10px 16px", background: "#080d18", borderBottom: "1px solid #1a3a5c" }}>
           {["Title", "Category", "Date", "Actions"].map((h) => (
             <span key={h} style={{ fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(122,155,181,0.5)", fontWeight: 600 }}>{h}</span>
           ))}
         </div>
 
-        {/* Loading skeletons */}
         {loading && [...Array(5)].map((_, i) => (
-          <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 130px 110px 140px", padding: "14px 16px", borderBottom: "1px solid #0d2035" }}>
-            {[...Array(4)].map((__, j) => (
-              <div key={j} style={{ height: 10, background: "#1a3a5c", borderRadius: 3, width: j === 0 ? "70%" : "50%" }} />
+          <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 130px 110px 140px", padding: "14px 16px", borderBottom: "1px solid #0d2035", gap: 8 }}>
+            {[70, 50, 50, 50].map((w, j) => (
+              <div key={j} style={{ height: 10, background: "#1a3a5c", borderRadius: 3, width: `${w}%` }} />
             ))}
           </div>
         ))}
 
-        {/* Rows */}
         {!loading && filtered.length === 0 && (
           <div style={{ padding: "48px 20px", textAlign: "center" }}>
             <p style={{ fontSize: 13, color: "#7a9bb5", marginBottom: 8 }}>
@@ -140,20 +137,21 @@ export default function AdminInsightsPage() {
             </span>
 
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              {/* ✅ Correct: links to /admin/insights/[id] dynamic route */}
               <Link href={`/admin/insights/${article.id}`}
-                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#7a9bb5", textDecoration: "none", transition: "color 0.2s" }}
+                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#7a9bb5", textDecoration: "none" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#00d4ff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#7a9bb5")}>
                 Edit
               </Link>
               <button onClick={() => setConfirm(article.id)}
-                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#7a9bb5", background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.2s" }}
+                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#7a9bb5", background: "none", border: "none", cursor: "pointer", padding: 0 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#f87171")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#7a9bb5")}>
                 Delete
               </button>
               <Link href={`/insights/${article.slug}`} target="_blank"
-                style={{ fontSize: 11, color: "rgba(122,155,181,0.3)", textDecoration: "none", transition: "color 0.2s" }}
+                style={{ fontSize: 11, color: "rgba(122,155,181,0.3)", textDecoration: "none" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#7a9bb5")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(122,155,181,0.3)")}>
                 ↗
@@ -167,7 +165,7 @@ export default function AdminInsightsPage() {
         ↳ supabase · table: articles · ordered by date desc
       </p>
 
-      {/* Delete confirm modal */}
+      {/* Delete confirm */}
       {confirm && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, backdropFilter: "blur(4px)" }}>
           <div style={{ background: "#0d1b2e", border: "1px solid rgba(0,212,255,0.15)", borderRadius: 8, padding: 32, maxWidth: 400, width: "90%" }}>
@@ -191,13 +189,7 @@ export default function AdminInsightsPage() {
 
       {/* Toast */}
       {toast.msg && (
-        <div style={{
-          position: "fixed", bottom: 24, right: 24, zIndex: 200,
-          padding: "12px 20px", borderRadius: 4, fontSize: 13, fontFamily: "monospace",
-          background: toast.type === "error" ? "#450a0a" : "#0d1b2e",
-          border: toast.type === "error" ? "1px solid rgba(248,113,113,0.4)" : "1px solid rgba(0,212,255,0.3)",
-          color: toast.type === "error" ? "#f87171" : "#00d4ff",
-        }}>
+        <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 200, padding: "12px 20px", borderRadius: 4, fontSize: 13, fontFamily: "monospace", background: toast.type === "error" ? "#450a0a" : "#0d1b2e", border: toast.type === "error" ? "1px solid rgba(248,113,113,0.4)" : "1px solid rgba(0,212,255,0.3)", color: toast.type === "error" ? "#f87171" : "#00d4ff" }}>
           {toast.type === "error" ? "✗" : "✓"} {toast.msg}
         </div>
       )}
