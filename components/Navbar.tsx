@@ -64,7 +64,7 @@ export default function Navbar() {
         </nav>
 
         {/* ── Desktop CTA ── */}
-        <Link href="/contact" className="hidden md:inline-flex btn-primary">
+        <Link href="/subscribe" className="hidden md:inline-flex btn-primary">
           Subscribe
         </Link>
 
@@ -95,7 +95,7 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link href="/contact" className="btn-primary self-start mt-2" onClick={() => setMenuOpen(false)}>
+          <Link href="/subscribe" className="btn-primary self-start mt-2" onClick={() => setMenuOpen(false)}>
             Subscribe
           </Link>
         </div>

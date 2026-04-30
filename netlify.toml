@@ -1,6 +1,12 @@
 [build]
-  command   = "npm run build"
-  publish   = ".next"
+  command = "npm run build"
+  publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# ── Scheduled function: daily briefing at 07:00 UTC Mon–Fri ─────────────────
+# Netlify Scheduled Functions call a serverless function on a cron schedule.
+# The function makes a POST to your /api/cron/daily-briefing route.
+[functions."scheduled-daily-briefing"]
+  schedule = "0 7 * * 1-5"
