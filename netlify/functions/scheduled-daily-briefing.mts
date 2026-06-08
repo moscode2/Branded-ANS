@@ -1,6 +1,3 @@
-// netlify/functions/scheduled-daily-briefing.mts
-// This file is automatically run by Netlify on the cron schedule
-// defined in netlify.toml: "0 7 * * 1-5" (07:00 UTC Mon–Fri)
 
 import type { Config } from "@netlify/functions";
 

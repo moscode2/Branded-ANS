@@ -74,9 +74,9 @@ export default function AboutPage() {
               {/* Quick stats */}
               <div className="grid grid-cols-3 gap-4 mt-10 pt-8 border-t border-cyan/10">
                 {[
-                  { num: "47+",  label: "Countries" },
-                  { num: "84",   label: "Publications" },
-                  { num: "2024", label: "Est." },
+                  { num: "20+",  label: "Countries" },
+                  { num: "in progress",   label: "Publications" },
+                  { num: "2026", label: "Est." },
                 ].map((s) => (
                   <div key={s.label}>
                     <p className="font-display font-700 text-2xl text-cyan">{s.num}</p>
