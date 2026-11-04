@@ -173,7 +173,7 @@ export default function HomePage() {
             <NewsletterForm />
 
             <p className="text-[0.65rem] text-muted/50 mt-3">
-              No spam. Unsubscribe at any time.
+               Unsubscribe at any time.
             </p>
           </div>
         </div>
