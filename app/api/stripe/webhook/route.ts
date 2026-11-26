@@ -128,7 +128,7 @@ async function upsertSubscription(data: {
 async function sendConfirmationEmail(email: string, planId: string) {
   const planNames: Record<string, string> = {
     daily:  "Daily Intelligence ($15/month)",
-    annual: "Annual Intelligence ($120/year)",
+    annual: "Annual Intelligence ($year)",
   };
   const planName = planNames[planId] ?? planId;
 
